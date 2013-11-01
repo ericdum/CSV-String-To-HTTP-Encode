@@ -1,0 +1,11 @@
+{
+    "name": "xlsx-file-to-http-encode",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies" : [
+        "node-xlsx",
+        "underscore",
+        "express",
+        "connect-multiparty"
+    ]
+}
