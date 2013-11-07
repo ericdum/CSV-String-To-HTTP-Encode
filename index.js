@@ -36,6 +36,7 @@ app.post('/upload', multiparty, function(req, res){
             var process = obj.worksheets[0].data[i];
             for ( var j=process.length-1; j>=0; j-- ) {
                 process[j*2] = _.clone(process[j]);
+                if( typeof process[j*2] == "undefined" ) continue;
                 process[j*2+1] = _.clone(process[j]);
                 process[j*2+1].value = encodeURIComponent(process[j*2+1].value);
             }
