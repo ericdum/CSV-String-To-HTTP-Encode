@@ -29,8 +29,11 @@ app.get('/', function(req, res){
 });
 
 app.post('/upload', multiparty, function(req, res){
+    console.log('-------- upload request:');
     if( req.files.xlsx.type == types["xlsx"] ){
+        console.log('xlsx detected, ', 'ready to parse: ', req.files.xlsx.path);
         var obj = xlsx.parse(req.files.xlsx.path);
+        console.log('xlsx parsed');
         obj.worksheets[0].maxCol *= 2;
         for ( var i in obj.worksheets[0].data){
             var process = obj.worksheets[0].data[i];
@@ -41,7 +44,9 @@ app.post('/upload', multiparty, function(req, res){
                 process[j*2+1].value = encodeURIComponent(process[j*2+1].value);
             }
             obj.worksheets[0].data[i] = _.clone(process);
+            console.log(i);
         }
+        console.log('row count: ', obj.worksheets.length);
         res.writeHead(200, {
             'Content-Type': req.files.xlsx.path,
             'Content-Disposition': 'attachment; filename="'+req.files.xlsx.name+'"'
