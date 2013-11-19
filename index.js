@@ -39,12 +39,12 @@ app.post('/upload', multiparty, function(req, res){
             var process = obj.worksheets[0].data[i];
             for ( var j=process.length-1; j>=0; j-- ) {
                 process[j*2] = _.clone(process[j]);
-                if( typeof process[j*2] == "undefined" ) continue;
+                if( ! process[j*2] ) process[j]={formatCode: "General"};
                 process[j*2+1] = _.clone(process[j]);
                 process[j*2+1].value = encodeURIComponent(process[j*2+1].value);
             }
             obj.worksheets[0].data[i] = _.clone(process);
-            console.log(i);
+            obj.worksheets[0].length = i+1
         }
         console.log('row count: ', obj.worksheets.length);
         res.writeHead(200, {
