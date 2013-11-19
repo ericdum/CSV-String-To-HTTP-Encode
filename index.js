@@ -33,22 +33,28 @@ app.post('/upload', multiparty, function(req, res){
     if( req.files.xlsx.type == types["xlsx"] ){
         console.log('xlsx detected, ', 'ready to parse: ', req.files.xlsx.path);
         var obj = xlsx.parse(req.files.xlsx.path);
-        console.log('xlsx parsed');
-        obj.worksheets[0].maxCol *= 2;
+        var data = [];
+        console.log('xlsx parsed: ', obj);
         for ( var i in obj.worksheets[0].data){
+            data[i] = [];
             var process = obj.worksheets[0].data[i];
             for ( var j=process.length-1; j>=0; j-- ) {
-                process[j*2] = _.clone(process[j]);
-                if( ! process[j*2] ) process[j]={formatCode: "General"};
-                process[j*2+1] = _.clone(process[j]);
-                process[j*2+1].value = encodeURIComponent(process[j*2+1].value);
+                if( ! process[j] || typeof process[j] === "undefined" || ! process[j].value || process[j].value == NaN ){ 
+                    process[j] = {value:''};
+                }
+                
+                data[i][j*2] = process[j].value;
+                data[i][j*2+1] = encodeURIComponent(process[j].value);
             }
-            obj.worksheets[0].data[i] = _.clone(process);
-            obj.worksheets[0].length = i+1
         }
-        console.log('row count: ', obj.worksheets.length);
+        obj = {"worksheets":[{"data":data}]};
+        obj.creator = "mujiang.info";
+        obj.lastModifiedBy = "mujiang.info";
+        obj.created  = new Date();
+        obj.modified = new Date();
+        console.log(obj);
         res.writeHead(200, {
-            'Content-Type': req.files.xlsx.path,
+            'Content-Type': req.files.xlsx.type,
             'Content-Disposition': 'attachment; filename="'+req.files.xlsx.name+'"'
         });
         res.write(xlsx.build(obj));
