@@ -75,7 +75,7 @@ if (cluster.isMaster) {
     });
 
     cluster.on('listening', function(worker, address) {
-        console.error("Server has started to listening "+address.address+':'+address.port);
+        console.log("Server has started to listening "+address.address+':'+address.port);
     });
 
 } else {
