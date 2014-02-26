@@ -4,6 +4,7 @@ var express    = require('express'),
     multiparty = require('connect-multiparty')(),
     xlsx       = require('node-xlsx'),
     _          = require('underscore'),
+    cluster = require("cluster"),
     fs         = require('fs');
 
 var views   = path.join(__dirname, "views");
@@ -64,5 +65,19 @@ app.post('/upload', multiparty, function(req, res){
     }
 });
 
-app.listen(8888);
-console.log('Listening on port 8888');
+if (cluster.isMaster) {
+    console.log("cluster start");
+    cluster.fork();
+
+    cluster.on('exit', function(worker, code, signal) {
+        console.error("worder "+worker.process.pid+" died");
+        cluster.fork();
+    });
+
+    cluster.on('listening', function(worker, address) {
+        console.error("Server has started to listening "+address.address+':'+address.port);
+    });
+
+} else {
+    app.listen(8888);
+}
